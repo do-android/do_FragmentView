@@ -49,8 +49,8 @@ public class do_FragmentView_View extends DrawerLayout implements DoIUIModuleVie
 
 	public do_FragmentView_View(Context context) {
 		super(context);
-		//设置左右滑动背景渐变阴影效果为透明，默认为灰色；
-		//this.setScrimColor(Color.TRANSPARENT);
+		// 设置左右滑动背景渐变阴影效果为透明，默认为灰色；
+		// this.setScrimColor(Color.TRANSPARENT);
 		initEvents();
 	}
 
@@ -60,7 +60,6 @@ public class do_FragmentView_View extends DrawerLayout implements DoIUIModuleVie
 	@Override
 	public void loadView(DoUIModule _doUIModule) throws Exception {
 		this.model = (do_FragmentView_MAbstract) _doUIModule;
-		//...do something
 	}
 
 	/**
@@ -88,7 +87,7 @@ public class do_FragmentView_View extends DrawerLayout implements DoIUIModuleVie
 			allowAnimation = DoTextHelper.strToBool(_changedValues.get("allowAnimation"), false);
 		}
 		if (_changedValues.containsKey("supportGesture")) {
-			//支持   both 同时支持左右滑动(默认) , left 仅支持手势滑出左页,right 仅支持手势滑出右页
+			// 支持 both 同时支持左右滑动(默认) , left 仅支持手势滑出左页,right 仅支持手势滑出右页
 			setSupportGesture(_changedValues.get("supportGesture"));
 		}
 	}
@@ -154,7 +153,7 @@ public class do_FragmentView_View extends DrawerLayout implements DoIUIModuleVie
 	 */
 	@Override
 	public boolean invokeAsyncMethod(String _methodName, JSONObject _dictParas, DoIScriptEngine _scriptEngine, String _callbackFuncName) {
-		//...do something
+		// ...do something
 		return false;
 	}
 
@@ -163,7 +162,7 @@ public class do_FragmentView_View extends DrawerLayout implements DoIUIModuleVie
 	 */
 	@Override
 	public void onDispose() {
-		//...do something
+		// ...do something
 	}
 
 	/**
@@ -214,7 +213,7 @@ public class do_FragmentView_View extends DrawerLayout implements DoIUIModuleVie
 		String contentTemplatePath = getTemplatePath(contentIndex);
 		DoIUIModuleView contentModuleView = createModuleView(_scriptEngine.getCurrentPage(), contentTemplatePath);
 		contentModuleView.getModel().setModelData(childData);
-		this.addView((View) contentModuleView);//mainContentView
+		this.addView((View) contentModuleView);// mainContentView
 		createLeftFragmentView(childData, _scriptEngine.getCurrentPage());
 		createRightFragmentView(childData, _scriptEngine.getCurrentPage());
 	}
@@ -371,11 +370,25 @@ public class do_FragmentView_View extends DrawerLayout implements DoIUIModuleVie
 
 			@Override
 			public void onDrawerOpened(View drawerView) {
+				String aaaString = (String) drawerView.getTag();
+				if ("LEFT".equals(aaaString)) {
+					fireIndexChanged(1);
+				} else {
+					fireIndexChanged(2);
+				}
 			}
 
 			@Override
 			public void onDrawerClosed(View drawerView) {
+				fireIndexChanged(0);
 			}
 		});
+	}
+
+	//中间页面返回0,左边页面返回1,右边页面返回2
+	private void fireIndexChanged(int result) {
+		DoInvokeResult _invokeResult = new DoInvokeResult(this.model.getUniqueKey());
+		_invokeResult.setResultInteger(result);
+		this.model.getEventCenter().fireEvent("indexChanged", _invokeResult);
 	}
 }
